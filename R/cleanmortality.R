@@ -3,6 +3,7 @@ library("tidyr")
 library("dplyr")
 library("readr")
 library("purrr")
+library("countrycode")
 
 # morts <- list(mat = list(maternalmortality, "matmor"), 
 #               inf = list(infantmortality, "infmor"), 
@@ -38,3 +39,8 @@ new_morts <- list(new_infantmortality, new_maternalmortality,
 full_data <- reduce(new_morts, full_join, 
                     by = c("Country.name", "year"))
 
+full_data$ISO <- countrycode(full_data$Country.name,
+                            origin = "country.name",
+                            destination = "iso3c")
+
+full_data %>% select(-c("Country.name"))
