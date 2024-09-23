@@ -5,11 +5,6 @@ library("readr")
 library("purrr")
 library("countrycode")
 
-# morts <- list(mat = list(maternalmortality, "matmor"), 
-#               inf = list(infantmortality, "infmor"), 
-#               neo = list(neonatalmortality, "neomort"), 
-#               und = list(under5mortality, "under5mort"))
-
 clean_mortality <- function(file, people){
   # import data
   mort <- file
@@ -27,13 +22,20 @@ clean_mortality <- function(file, people){
   return(mort_sub)
 }
 
-# create_mort_df <- function(mort_list){
-#   for(i in 1:length(mort_list)){
-#     
-#   }
-# }
+new_infantmortality <- clean_mortality(
+  maternalmortality <- read_csv("original/maternalmortality.csv"),
+  "matmor")
+new_maternalmortality <- clean_mortality(
+  infantmortality <- read_csv("original/infantmortality.csv"),
+  "infmor")
+new_neonatalmortality <- clean_mortality(
+  neonatalmortality <- read_csv("original/neonatalmortality.csv"),
+  "neomor")
+new_under5mortality <- clean_mortality(
+  under5mortality <- read_csv("original/under5mortality.csv"),
+  "under5mor")
 
-new_morts <- list(new_infantmortality, new_maternalmortality, 
+new_morts <- list(new_infantmortality, new_maternalmortality,
                   new_neonatalmortality, new_under5mortality)
 
 full_data <- reduce(new_morts, full_join, 
@@ -43,4 +45,4 @@ full_data$ISO <- countrycode(full_data$Country.name,
                             origin = "country.name",
                             destination = "iso3c")
 
-full_data %>% select(-c("Country.name"))
+full_data <- full_data %>% select(-c("Country.name"))
