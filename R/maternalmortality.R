@@ -3,6 +3,11 @@ library("tidyr")
 library("dplyr")
 library("readr")
 
+mortality <- function(file){
+  
+  
+}
+
 # import data
 mm <- read_csv("original/maternalmortality.csv")
 
