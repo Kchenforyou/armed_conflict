@@ -31,4 +31,4 @@ final_data <- final_data |>
          earthquake = replace_na(earthquake, 0),
          totdeath = replace_na(totdeath, 0))
 
-write.csv(df2,"original/armed_conflict.csv")
+write.csv(final_data,"original/armed_conflict.csv")
