@@ -92,6 +92,15 @@ neomormod <- with(mice.multi.out,
                            as.factor(ISOnum) + as.factor(year)))
 ```
 
+Pooling
+
+```{r}
+out.matmor <- pool(matmormod)
+out.infmor <- pool(infmormod)
+out.neomor<- pool(neomormod)
+out.un5mor <- pool(un5mormod)
+```
+
 
 ```{r}
 models <- list(matmormod, un5mormod, infmormod, neomormod)
