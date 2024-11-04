@@ -66,17 +66,33 @@ preds <- as.formula(" ~ armconf1 + gdp1000 + OECD + popdens + urban +
                   agedep + male_edu + temp + rainfall1000 + earthquake + drought + 
                   ISO + as.factor(year)")
 
-matmormod <- with(data = mice.multi.out, 
-                  lm(update.formula(preds, matmor ~ .)))
-un5mormod <- with(data = mice.multi.out, 
-                  lm(update.formula(preds, under5mor ~ .)))
-infmormod <- with(data = final_dat,
-                  lm(update.formula(preds, infmor ~ .)))
-neomormod <- with(data = mice.multi.out, 
-                  lm(update.formula(preds, neomor ~ .)))
+matmormod <- with(mice.multi.out, 
+                      lm(matmor ~ -1 + armconf1 + gdp1000 + OECD +
+                           popdens + urban + 
+                           agedep + male_edu + temp + rainfall1000 +
+                           earthquake + drought + 
+                           as.factor(ISOnum) + as.factor(year)))
+un5mormod <- with(mice.multi.out, 
+                      lm(under5mor ~ -1 + armconf1 + gdp1000 + OECD +
+                           popdens + urban + 
+                           agedep + male_edu + temp + rainfall1000 +
+                           earthquake + drought + 
+                           as.factor(ISOnum) + as.factor(year)))
+infmormod <- with(mice.multi.out, 
+                      lm(infmor ~ -1 + armconf1 + gdp1000 + OECD +
+                           popdens + urban + 
+                           agedep + male_edu + temp + rainfall1000 +
+                           earthquake + drought + 
+                           as.factor(ISOnum) + as.factor(year)))
+neomormod <- with(mice.multi.out, 
+                      lm(neomor ~ -1 + armconf1 + gdp1000 + OECD +
+                           popdens + urban + 
+                           agedep + male_edu + temp + rainfall1000 +
+                           earthquake + drought + 
+                           as.factor(ISOnum) + as.factor(year)))
 ```
 
-'Slice' out armed conflict data
+
 ```{r}
 models <- list(matmormod, un5mormod, infmormod, neomormod)
 
