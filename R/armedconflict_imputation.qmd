@@ -27,6 +27,7 @@ Import Armed Conflict Data Set and Log Transform GDP
 final_dat <- read_csv("../data/armed_conflict.csv")
 final_dat <- final_dat[-1]
 final_dat$gdp1000 <- log(final_dat$gdp1000 + 1)
+final_dat <- final_dat %>% mutate(pctpopdens = popdens/100)
 is.na(final_dat) <- sapply(final_dat, is.infinite)
 # final_dat <- final_dat %>% mutate_all(~replace(., is.na(.), 0))
 ```
@@ -56,8 +57,6 @@ mice.multi.out  <- mice(midata, seed = 100, m = 10, maxit = 20,
 
 plot(mice.multi.out)
 ```
-
-
 
 Models
 
@@ -101,42 +100,36 @@ out.neomor<- pool(neomormod)
 out.un5mor <- pool(un5mormod)
 ```
 
-
 ```{r}
-models <- list(matmormod, un5mormod, infmormod, neomormod)
-
-# Extracting armconf1 coefficients
-armed_conflict_coefs <- sapply(models, function(model){ coef(model)["armconf1"]})
-
-# Create a data frame with "Yes" and "No" rows
-armed_conflict_coefs <- t(data.frame(
-  "No Armed Conflict" = rep(0, length(armed_conflict_coefs)),          # 0 for "No" rows
-  "Yes Armed Conflict" = armed_conflict_coefs))                         # Coefficient for "Yes" rows
-
-colnames(armed_conflict_coefs) <- c("Maternal Mortality",
-                                "Under 5 Mortality",
-                                "Infant Mortality",
-                                "Neonatal Mortality") # Name columns by model
+compare <- list(out.matmor, out.infmor, out.neomor, out.un5mor, 
+               matmormod, un5mormod, infmormod, neomormod)
 ```
 
 Combine the other covariates
 
 ```{r}
-other_coefs <- as.data.frame(sapply(models, function(model){ coef(model)[-1]}))
-
-colnames(other_coefs) <- c("Maternal Mortality",
-                                     "Under 5 Mortality",
-                                     "Infant Mortality",
-                                     "Neonatal Mortality")
-
-armed_conf_table <- rbind(armed_conflict_coefs, other_coefs)
+keepvars <- list("armconf1" = "Armed conflict",
+                 "loggdp" = "log(GDP)",
+                 "OECD" = "OECD",
+                 "pctpopdens" = "Population density",
+                 "urban" = "Urban",
+                 "agedep" = "Age dependency",
+                 "male_edu" = "Male education",
+                 "temp" = "Average temperature",
+                 "rainfall" = "Average rainfall",
+                 "earthquake" = "Earthquake",
+                 "drought" = "Drought")
 
 ```
-
 
 ```{r}
 #|output = false
 #|echo = false
 # Use stargazer to display the table
-s <- stargazer(armed_conf_table, type = "html", title = "Armed Conflict Binary for Mortality Models", out = c("Figures/mordmodel.html"), summary = FALSE, rownames = TRUE)
+screenreg(tosave, 
+       ci.force = TRUE,
+       custom.coef.map = keepvars,
+       custom.model.names = c("Mat CC", "Mat MI", "Un5 CC", "Un5 MI", "Inf CC", "Inf MI", "Neo CC", "Neo MI"))
+
+save(tosave, file = here("output", "mi_output.Rdata"))
 ```
